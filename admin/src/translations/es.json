@@ -10,5 +10,12 @@
   "home.prompt.confirm.cancel": "Cancelar",
   "home.prompt.confirm.ok": "Si, publicar",
   "home.busy": "Disparando el build, por favor espere.",
-  "home.button.publish": "Publicar en {instance}"
+  "home.button.publish": "Publicar en {instance}",
+  "home.action.column": "Acción",
+  "home.status.column": "Estado del build",
+  "home.status.loading": "Comprobando estado del build...",
+  "home.status.unconfigured": "No configurado",
+  "home.status.idle": "Inactivo",
+  "home.status.active": "{status}",
+  "home.status.details": "{branch} @ {commit}"
 }
