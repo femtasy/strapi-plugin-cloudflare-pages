@@ -34,7 +34,7 @@ const HomePage = () => {
   const [instance, setInstance] = useState(null);
   const [instances, setInstances] = useState([]);
   const [buildStatuses, setBuildStatuses] = useState({});
-  const { formatMessage } = useIntl();
+  const { formatMessage, formatDate, formatTime } = useIntl();
 
   const pollBuildStatuses = useCallback(async (instanceList) => {
     const monitored = instanceList.filter((item) => item.buildMonitor);
@@ -142,6 +142,58 @@ const HomePage = () => {
     );
   };
 
+  const renderLastDeploymentDate = (item) => {
+    if (!item.buildMonitor) {
+      return (
+        <Typography textColor="neutral500" variant="pi">
+          {formatMessage({ id: 'cloudflare-pages.home.lastDeployment.unavailable' })}
+        </Typography>
+      );
+    }
+
+    const statusData = buildStatuses[item.id];
+    if (!statusData) {
+      return <Loader small>{formatMessage({ id: 'cloudflare-pages.home.status.loading' })}</Loader>;
+    }
+
+    if (statusData.error || statusData.build) {
+      return (
+        <Typography textColor="neutral500" variant="pi">
+          {formatMessage({ id: 'cloudflare-pages.home.lastDeployment.unavailable' })}
+        </Typography>
+      );
+    }
+
+    const deployedOn = statusData.lastDeployment?.deployed_on;
+    if (!deployedOn) {
+      return (
+        <Typography textColor="neutral500" variant="pi">
+          {formatMessage({ id: 'cloudflare-pages.home.lastDeployment.none' })}
+        </Typography>
+      );
+    }
+
+    const deploymentDate = new Date(deployedOn);
+    return (
+      <Typography textColor="neutral800" variant="pi">
+        {formatMessage(
+          { id: 'cloudflare-pages.home.lastDeployment.value' },
+          {
+            date: formatDate(deploymentDate, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }),
+            time: formatTime(deploymentDate, {
+              hour: 'numeric',
+              minute: '2-digit',
+            }),
+          }
+        )}
+      </Typography>
+    );
+  };
+
   const isInstanceBusy = (item) => {
     const build = buildStatuses[item.id]?.build;
     return busy || (build && ACTIVE_STATUSES.has(build.status));
@@ -165,7 +217,7 @@ const HomePage = () => {
               </Alert>
             )}
 
-            <Table colCount={3} rowCount={instances.length + 1}>
+            <Table colCount={4} rowCount={instances.length + 1}>
               <Thead>
                 <Tr>
                   <Th>
@@ -176,6 +228,11 @@ const HomePage = () => {
                   <Th>
                     <Typography variant="sigma" textColor="neutral600">
                       {formatMessage({ id: 'cloudflare-pages.home.status.column' })}
+                    </Typography>
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma" textColor="neutral600">
+                      {formatMessage({ id: 'cloudflare-pages.home.lastDeployment.column' })}
                     </Typography>
                   </Th>
                   <Th>
@@ -192,6 +249,7 @@ const HomePage = () => {
                       <Typography textColor="neutral800">{item.name}</Typography>
                     </Td>
                     <Td>{renderBuildStatus(item)}</Td>
+                    <Td>{renderLastDeploymentDate(item)}</Td>
                     <Td>
                       {busy && instance === item.id ? (
                         <Loader small>{formatMessage({ id: 'cloudflare-pages.home.busy' })}</Loader>

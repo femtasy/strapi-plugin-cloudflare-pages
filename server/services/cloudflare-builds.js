@@ -4,6 +4,7 @@ const axios = require('axios');
 
 const API_BASE = 'https://api.cloudflare.com/client/v4';
 const ACTIVE_STATUSES = new Set(['queued', 'initializing', 'running']);
+const SUCCESSFUL_DEPLOYMENT_STATUSES = new Set(['stopped']);
 const workerTagCache = new Map();
 
 const getApiToken = (monitor) => {
@@ -51,7 +52,7 @@ module.exports = ({ strapi }) => ({
     return worker.tag;
   },
 
-  async getActiveBuild(monitor) {
+  async fetchBuilds(monitor) {
     const apiToken = getApiToken(monitor);
     const workerTag = await this.getWorkerTag(monitor);
     const response = await axios.get(
@@ -66,11 +67,28 @@ module.exports = ({ strapi }) => ({
       throw new Error(response.data.errors?.[0]?.message || 'Cloudflare API error');
     }
 
-    const builds = (response.data.result || [])
-      .filter((build) => ACTIVE_STATUSES.has(build.status))
-      .sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
+    return response.data.result || [];
+  },
 
-    return builds[0] || null;
+  async getBuildStatus(monitor) {
+    const builds = await this.fetchBuilds(monitor);
+
+    const activeBuild = builds
+      .filter((build) => ACTIVE_STATUSES.has(build.status))
+      .sort((a, b) => new Date(b.created_on) - new Date(a.created_on))[0] || null;
+
+    const lastDeployment = builds
+      .filter(
+        (build) =>
+          SUCCESSFUL_DEPLOYMENT_STATUSES.has(build.status) && build.build_outcome === 'success'
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.stopped_on || b.modified_on || b.created_on) -
+          new Date(a.stopped_on || a.modified_on || a.created_on)
+      )[0] || null;
+
+    return { activeBuild, lastDeployment };
   },
 
   serializeBuild(build) {
@@ -85,6 +103,16 @@ module.exports = ({ strapi }) => ({
       commit_hash: build.build_trigger_metadata?.commit_hash || null,
       author: build.build_trigger_metadata?.author || null,
       created_on: build.created_on || null,
+    };
+  },
+
+  serializeLastDeployment(build) {
+    if (!build) {
+      return null;
+    }
+
+    return {
+      deployed_on: build.stopped_on || build.modified_on || build.created_on || null,
     };
   },
 });

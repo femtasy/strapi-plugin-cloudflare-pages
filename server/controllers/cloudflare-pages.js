@@ -47,10 +47,11 @@ module.exports = ({ strapi }) => ({
     }
 
     try {
-      const build = await buildsService.getActiveBuild(monitor);
+      const { activeBuild, lastDeployment } = await buildsService.getBuildStatus(monitor);
       ctx.send({
         configured: true,
-        build: buildsService.serializeBuild(build),
+        build: buildsService.serializeBuild(activeBuild),
+        lastDeployment: buildsService.serializeLastDeployment(lastDeployment),
       });
     } catch (error) {
       ctx.badRequest(error.message);

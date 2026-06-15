@@ -17,5 +17,9 @@
   "home.status.unconfigured": "No configurado",
   "home.status.idle": "Inactivo",
   "home.status.active": "{status}",
-  "home.status.details": "{branch} @ {commit}"
+  "home.status.details": "{branch} @ {commit}",
+  "home.lastDeployment.column": "Fecha del último despliegue",
+  "home.lastDeployment.value": "{date} a las {time}",
+  "home.lastDeployment.none": "Sin despliegues todavía",
+  "home.lastDeployment.unavailable": "—"
 }
