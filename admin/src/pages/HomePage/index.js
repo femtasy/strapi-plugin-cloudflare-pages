@@ -217,14 +217,9 @@ const HomePage = () => {
               </Alert>
             )}
 
-            <Table colCount={4} rowCount={instances.length + 1}>
+            <Table colCount={3} rowCount={instances.length + 1}>
               <Thead>
                 <Tr>
-                  <Th>
-                    <Typography variant="sigma" textColor="neutral600">
-                      {formatMessage({ id: 'cloudflare-pages.home.prompt' })}
-                    </Typography>
-                  </Th>
                   <Th>
                     <Typography variant="sigma" textColor="neutral600">
                       {formatMessage({ id: 'cloudflare-pages.home.status.column' })}
@@ -245,9 +240,6 @@ const HomePage = () => {
               <Tbody>
                 {instances.map((item) => (
                   <Tr key={item.id}>
-                    <Td>
-                      <Typography textColor="neutral800">{item.name}</Typography>
-                    </Td>
                     <Td>{renderBuildStatus(item)}</Td>
                     <Td>{renderLastDeploymentDate(item)}</Td>
                     <Td>
@@ -260,10 +252,7 @@ const HomePage = () => {
                           onClick={() => handleClick(item.id)}
                           disabled={isInstanceBusy(item)}
                         >
-                          {formatMessage(
-                            { id: 'cloudflare-pages.home.button.publish' },
-                            { instance: item.name }
-                          )}
+                          {formatMessage({ id: 'cloudflare-pages.home.button.publish' })}
                         </Button>
                       )}
                     </Td>
