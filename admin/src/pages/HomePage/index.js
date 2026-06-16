@@ -126,17 +126,21 @@ const HomePage = () => {
     }
 
     const { build } = statusData;
+    const branch = build.branch || '-';
+    const detailsMessageId = build.commit_hash
+      ? 'cloudflare-pages.home.status.detailsWithCommit'
+      : build.trigger_source === 'api' || build.trigger_source === 'manual'
+        ? 'cloudflare-pages.home.status.detailsDeployHook'
+        : 'cloudflare-pages.home.status.detailsBranchOnly';
+
     return (
       <Stack spacing={1}>
         <Badge active>{formatMessage({ id: 'cloudflare-pages.home.status.active' }, { status: build.status })}</Badge>
         <Typography textColor="neutral600" variant="pi">
-          {formatMessage(
-            { id: 'cloudflare-pages.home.status.details' },
-            {
-              branch: build.branch || '-',
-              commit: build.commit_hash ? build.commit_hash.slice(0, 7) : '-',
-            }
-          )}
+          {formatMessage(detailsMessageId, {
+            branch,
+            commit: build.commit_hash ? build.commit_hash.slice(0, 7) : undefined,
+          })}
         </Typography>
       </Stack>
     );
@@ -156,7 +160,7 @@ const HomePage = () => {
       return <Loader small>{formatMessage({ id: 'cloudflare-pages.home.status.loading' })}</Loader>;
     }
 
-    if (statusData.error || statusData.build) {
+    if (statusData.error) {
       return (
         <Typography textColor="neutral500" variant="pi">
           {formatMessage({ id: 'cloudflare-pages.home.lastDeployment.unavailable' })}

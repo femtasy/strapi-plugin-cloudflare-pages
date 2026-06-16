@@ -102,6 +102,7 @@ module.exports = ({ strapi }) => ({
       branch: build.build_trigger_metadata?.branch || null,
       commit_hash: build.build_trigger_metadata?.commit_hash || null,
       author: build.build_trigger_metadata?.author || null,
+      trigger_source: build.build_trigger_metadata?.build_trigger_source || null,
       created_on: build.created_on || null,
     };
   },
