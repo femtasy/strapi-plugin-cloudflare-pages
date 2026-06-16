@@ -137,7 +137,7 @@ const HomePage = () => {
       <Stack spacing={1}>
         <Badge active>{formatMessage({ id: 'cloudflare-pages.home.status.active' }, { status: build.status })}</Badge>
         <Typography textColor="neutral600" variant="pi">
-          {formatMessage(detailsMessageId, {
+          {formatMessage({ id: detailsMessageId }, {
             branch,
             commit: build.commit_hash ? build.commit_hash.slice(0, 7) : undefined,
           })}
