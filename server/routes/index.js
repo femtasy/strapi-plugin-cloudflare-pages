@@ -27,6 +27,19 @@ module.exports = {
             }
           }]
         }
+      },
+      {
+        "method": "GET",
+        "path": "/status/:id",
+        "handler": "cloudflarePagesController.status",
+        "config": {
+          "policies": [{
+            name: "admin::hasPermissions",
+            config: {
+              actions: ["plugin::cloudflare-pages.publish"]
+            }
+          }]
+        }
       }
     ]
   }
