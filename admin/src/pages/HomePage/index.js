@@ -6,6 +6,7 @@
 
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
+import styled from 'styled-components';
 import pluginId from '../../pluginId';
 import axiosInstance from '../../utils/axiosInstance';
 
@@ -25,6 +26,13 @@ import Upload from '@strapi/icons/Upload';
 
 const POLL_INTERVAL_MS = 5000;
 const ACTIVE_STATUSES = new Set(['queued', 'initializing', 'running']);
+
+const EqualColumnsTable = styled(Table)`
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+`;
 
 const HomePage = () => {
   const [ready, setReady] = useState(false);
@@ -134,7 +142,7 @@ const HomePage = () => {
         : 'cloudflare-pages.home.status.detailsBranchOnly';
 
     return (
-      <Stack spacing={1}>
+      <Stack spacing={1} alignItems="flex-start">
         <Badge active>{formatMessage({ id: 'cloudflare-pages.home.status.active' }, { status: build.status })}</Badge>
         <Typography textColor="neutral600" variant="pi">
           {formatMessage({ id: detailsMessageId }, {
@@ -221,7 +229,7 @@ const HomePage = () => {
               </Alert>
             )}
 
-            <Table colCount={3} rowCount={instances.length + 1}>
+            <EqualColumnsTable colCount={3} rowCount={instances.length + 1}>
               <Thead>
                 <Tr>
                   <Th>
@@ -263,7 +271,7 @@ const HomePage = () => {
                   </Tr>
                 ))}
               </Tbody>
-            </Table>
+            </EqualColumnsTable>
           </>
         )}
         <Dialog
